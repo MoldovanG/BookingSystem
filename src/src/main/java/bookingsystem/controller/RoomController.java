@@ -1,4 +1,4 @@
-package bookingsystem.controller;
+package com.moldovan.uni.bookingsystem.controller;
 
 import com.moldovan.uni.bookingsystem.dto.RoomDto;
 import com.moldovan.uni.bookingsystem.service.RoomService;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -31,7 +32,9 @@ public class RoomController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public RoomDto create(@RequestBody RoomDto roomDto) {
+    public RoomDto create(
+            @Valid
+            @RequestBody RoomDto roomDto) {
         return roomService.save(roomDto);
     }
 

@@ -1,17 +1,30 @@
 
-package bookingsystem.domain;
+package com.moldovan.uni.bookingsystem.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
+
+import javax.persistence.*;
 
 
+@Builder
 @Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "person")
 public class Person {
 
-    private String personId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private String id;
+
+    @Column(name = "name")
     private String name;
+    @Column(name = "surname")
     private String surname;
+    @Column(name = "serial_number")
     private String IdentityCardIdentifier;
+    @Column(name = "address")
     private String address;
 }

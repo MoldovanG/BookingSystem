@@ -1,12 +1,16 @@
-package bookingsystem.dto;
+package com.moldovan.uni.bookingsystem.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
+import javax.validation.constraints.Size;
+
+
+@Builder
 @Getter
+@Setter
 @AllArgsConstructor
-public class Room {
-    private final int roomId;
-    private final int capacity;
-    private final boolean hasView;
+@NoArgsConstructor
+public class RoomDto {
+    private int capacity;
+    private boolean hasView;
 }
