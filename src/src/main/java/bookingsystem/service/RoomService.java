@@ -1,8 +1,6 @@
-package bookingsystem.service;
+package com.moldovan.uni.bookingsystem.service;
 
-import com.moldovan.uni.bookingsystem.domain.Person;
 import com.moldovan.uni.bookingsystem.domain.Room;
-import com.moldovan.uni.bookingsystem.dto.PersonDto;
 import com.moldovan.uni.bookingsystem.dto.RoomDto;
 import com.moldovan.uni.bookingsystem.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +38,7 @@ public class RoomService {
     public boolean delete(int id) {
         Optional<Room> optionalRoom = roomRepository.getAll()
                 .stream()
-                .filter(room -> room.getRoomId() == id)
+                .filter(room -> room.getId() == id)
                 .findAny();
         if (optionalRoom.isPresent()) {
             roomRepository.delete(optionalRoom.get());
@@ -49,12 +47,12 @@ public class RoomService {
         return false;
     }
     private RoomDto mapToDto(Room room) {
-        return new RoomDto(room.getRoomId(),room.getCapacity(),room.isHasView());
+        return new RoomDto(room.getCapacity(),room.isHasView());
     }
 
     private Room mapToEntity(RoomDto roomDto) {
-        int currentMaxId = roomRepository.getMaxId().orElse(0);
-        return new Room(currentMaxId + 1,2,true);
+        Long currentMaxId = roomRepository.getMaxId().orElse(0l);
+        return new Room(1l,roomDto.getCapacity(),roomDto.isHasView());
     }
 
 }

@@ -1,12 +1,25 @@
-package bookingsystem.domain;
+package com.moldovan.uni.bookingsystem.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
+import javax.persistence.*;
+
+@Builder
 @Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "room")
 public class Room {
-    private final int roomId;
-    private final int capacity;
-    private final boolean hasView;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "capacity")
+    private int capacity;
+
+    @Column(name= "has_view")
+    private boolean hasView;
 }
