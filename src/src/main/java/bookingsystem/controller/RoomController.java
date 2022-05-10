@@ -39,15 +39,15 @@ public class RoomController {
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String remove(@PathVariable("id") int id) {
+    public String remove(@PathVariable("id") Long id) {
         boolean result = roomService.delete(id);
         return result ? String.format("Room %s was removed", id)
                 : String.format("Room %s was not removed", id);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RoomDto> update(@RequestBody RoomDto roomDto) {
-        RoomDto updatedRoom = roomService.update(roomDto);
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RoomDto> update(@RequestBody RoomDto roomDto, @PathVariable("id") Long id) {
+        RoomDto updatedRoom = roomService.update(roomDto, id);
         return new ResponseEntity<>(updatedRoom, null == updatedRoom ? HttpStatus.NO_CONTENT : HttpStatus.OK);
     }
 }

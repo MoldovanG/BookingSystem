@@ -37,14 +37,13 @@ public class PersonController {
 
     @DeleteMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     public String remove(@PathVariable("name") String name) {
-        boolean result = personService.delete(name);
-        return result ? String.format("Person %s was removed", name)
-                : String.format("Person %s was not removed", name);
+        personService.delete(name);
+        return String.format("Person %s was removed", name);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PersonDto> update(@RequestBody PersonDto personDto) {
-        PersonDto updatedPerson = personService.update(personDto);
+    @PutMapping(value = "/{personId}",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PersonDto> update(@RequestBody PersonDto personDto,@PathVariable("personId") String personId) {
+        PersonDto updatedPerson = personService.update(personDto, personId);
         return new ResponseEntity<>(updatedPerson, null == updatedPerson ? HttpStatus.NO_CONTENT: HttpStatus.OK);
     }
 

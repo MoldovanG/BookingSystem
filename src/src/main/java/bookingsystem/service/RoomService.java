@@ -2,57 +2,45 @@ package com.moldovan.uni.bookingsystem.service;
 
 import com.moldovan.uni.bookingsystem.domain.Room;
 import com.moldovan.uni.bookingsystem.dto.RoomDto;
+import com.moldovan.uni.bookingsystem.mapper.RoomMapper;
 import com.moldovan.uni.bookingsystem.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class RoomService {
     @Autowired
     RoomRepository roomRepository;
+    @Autowired
+    RoomMapper roomMapper;
 
     public RoomDto save(RoomDto roomDto){
-        Room room = mapToEntity(roomDto);
+        Room room = roomMapper.mapToEntity(roomDto);
         roomRepository.save(room);
-        return mapToDto(room);
+        return roomMapper.mapToDto(room);
     }
-    public RoomDto update(RoomDto roomDto) {
-        Room update = roomRepository.update(mapToEntity(roomDto));
-        if (null != update) {
-            return mapToDto(update);
-        }
-        return null;
+    public RoomDto update(RoomDto roomDto, Long roomId) {
+        Room entity = roomRepository.getOne(roomId);
+        entity.setCapacity(roomDto.getCapacity());
+        entity.setHasView(roomDto.isHasView());
+        roomRepository.save(entity);
+        return roomDto;
     }
 
     public List<RoomDto> getAll() {
-        return roomRepository.getAll()
+        return roomRepository.findAll()
                 .stream()
-                .map(room -> mapToDto(room))
+                .map(roomMapper::mapToDto)
                 .collect(Collectors.toList());
     }
 
-    public boolean delete(int id) {
-        Optional<Room> optionalRoom = roomRepository.getAll()
-                .stream()
-                .filter(room -> room.getId() == id)
-                .findAny();
-        if (optionalRoom.isPresent()) {
-            roomRepository.delete(optionalRoom.get());
-            return true;
-        }
-        return false;
-    }
-    private RoomDto mapToDto(Room room) {
-        return new RoomDto(room.getCapacity(),room.isHasView());
-    }
-
-    private Room mapToEntity(RoomDto roomDto) {
-        Long currentMaxId = roomRepository.getMaxId().orElse(0l);
-        return new Room(1l,roomDto.getCapacity(),roomDto.isHasView());
+    public boolean delete(Long id) {
+        Room entity = roomRepository.getOne(id);
+        roomRepository.delete(entity);
+        return true;
     }
 
 }

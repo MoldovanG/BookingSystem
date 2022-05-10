@@ -1,29 +1,37 @@
-package com.moldovan.uni.bookingsystem.dto;
 
-import com.moldovan.uni.bookingsystem.domain.Person;
-import com.moldovan.uni.bookingsystem.domain.Room;
+package com.moldovan.uni.bookingsystem.domain;
 import lombok.*;
-
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-
-
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookingDto {
+@Entity
+@Table(name = "booking")
+public class Booking {
 
-    @NotNull
+    @Id
+    private String id;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinTable(name = "bookings_responsible_person",
+            joinColumns = {
+                    @JoinColumn(name = "booking", referencedColumnName = "id")
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(name = "person", referencedColumnName = "id")
+            }
+    )
     private Person responsiblePerson;
-    @NotNull
-    private List<Room> reservedRooms;
-    @FutureOrPresent
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "id")
+    private List<Room> reservedRooms = new ArrayList<>();
+    @Column(name ="check_in_date")
     private LocalDate checkInDate;
-    @Future
+    @Column(name ="check_out_date")
     private LocalDate checkOutDate;
 }
