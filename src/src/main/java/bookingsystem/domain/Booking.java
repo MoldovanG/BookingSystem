@@ -1,29 +1,46 @@
-package com.moldovan.uni.bookingsystem.dto;
 
-import com.moldovan.uni.bookingsystem.domain.Person;
-import com.moldovan.uni.bookingsystem.domain.Room;
+package com.moldovan.uni.bookingsystem.domain;
 import lombok.*;
-
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.List;
-
-
+import java.util.HashSet;
+import java.util.Set;
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookingDto {
+@Entity
+@Table(name = "booking")
+public class Booking {
 
-    @NotNull
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person responsiblePerson;
-    @NotNull
-    private List<Room> reservedRooms;
-    @FutureOrPresent
+
+    @Column(name ="check_in_date")
     private LocalDate checkInDate;
-    @Future
+    @Column(name ="check_out_date")
     private LocalDate checkOutDate;
+
+    @OneToMany
+    @JoinTable(
+            name="BOOKING_ROOMS",
+            joinColumns = @JoinColumn( name="BOOKING_ID"),
+            inverseJoinColumns = @JoinColumn( name="ROOM_ID")
+    )
+    private Set<Room> reservedRooms = new HashSet<>();
+
+    @OneToMany
+    @JoinTable(
+            name="BOOKING_SERVICES",
+            joinColumns = @JoinColumn( name="BOOKING_ID"),
+            inverseJoinColumns = @JoinColumn( name="SERVICE_ID")
+    )
+    private Set<ExtraService> extraServices = new HashSet<>();
 }

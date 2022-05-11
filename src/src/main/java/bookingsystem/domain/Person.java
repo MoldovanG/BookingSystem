@@ -17,14 +17,17 @@ public class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "name")
     private String name;
     @Column(name = "surname")
     private String surname;
     @Column(name = "serial_number")
-    private String IdentityCardIdentifier;
+    private String identityCardIdentifier;
     @Column(name = "address")
     private String address;
+    @Column(name = "email")
+    private String email;
 }
