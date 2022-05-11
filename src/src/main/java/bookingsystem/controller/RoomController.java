@@ -35,7 +35,7 @@ public class RoomController {
     public RoomDto create(
             @Valid
             @RequestBody RoomDto roomDto) {
-        return roomService.save(roomDto);
+        return roomService.create(roomDto);
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

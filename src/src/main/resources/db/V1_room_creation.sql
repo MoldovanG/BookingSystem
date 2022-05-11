@@ -1,7 +1,0 @@
-CREATE TABLE room (
-  id BIGINT NOT_NULL AUTO_INCREMENT,
-  capacity VARCHAR(255) NOT NULL,
-  has_view BIT NOT NULL,
-
-  PRIMARY KEY(id)
-);

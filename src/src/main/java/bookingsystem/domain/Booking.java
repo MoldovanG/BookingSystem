@@ -3,8 +3,8 @@ package com.moldovan.uni.bookingsystem.domain;
 import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 @Builder
 @Getter
 @Setter
@@ -15,23 +15,32 @@ import java.util.List;
 public class Booking {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinTable(name = "bookings_responsible_person",
-            joinColumns = {
-                    @JoinColumn(name = "booking", referencedColumnName = "id")
-            },
-            inverseJoinColumns = {
-                    @JoinColumn(name = "person", referencedColumnName = "id")
-            }
-    )
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person responsiblePerson;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "id")
-    private List<Room> reservedRooms = new ArrayList<>();
+
     @Column(name ="check_in_date")
     private LocalDate checkInDate;
     @Column(name ="check_out_date")
     private LocalDate checkOutDate;
+
+    @OneToMany
+    @JoinTable(
+            name="BOOKING_ROOMS",
+            joinColumns = @JoinColumn( name="BOOKING_ID"),
+            inverseJoinColumns = @JoinColumn( name="ROOM_ID")
+    )
+    private Set<Room> reservedRooms = new HashSet<>();
+
+    @OneToMany
+    @JoinTable(
+            name="BOOKING_SERVICES",
+            joinColumns = @JoinColumn( name="BOOKING_ID"),
+            inverseJoinColumns = @JoinColumn( name="SERVICE_ID")
+    )
+    private Set<ExtraService> extraServices = new HashSet<>();
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -31,18 +32,20 @@ public class PersonController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public PersonDto create(@RequestBody PersonDto personDto) {
-        return personService.save(personDto);
+    public PersonDto create(
+            @Valid
+            @RequestBody PersonDto personDto) {
+        return personService.create(personDto);
     }
 
-    @DeleteMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String remove(@PathVariable("name") String name) {
-        personService.delete(name);
-        return String.format("Person %s was removed", name);
+    @DeleteMapping(value = "/{personId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String remove(@PathVariable("personId") Long personId) {
+        personService.delete(personId);
+        return String.format("Person %s was removed", personId);
     }
 
     @PutMapping(value = "/{personId}",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PersonDto> update(@RequestBody PersonDto personDto,@PathVariable("personId") String personId) {
+    public ResponseEntity<PersonDto> update(@RequestBody PersonDto personDto,@PathVariable("personId") Long personId) {
         PersonDto updatedPerson = personService.update(personDto, personId);
         return new ResponseEntity<>(updatedPerson, null == updatedPerson ? HttpStatus.NO_CONTENT: HttpStatus.OK);
     }

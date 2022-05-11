@@ -10,19 +10,17 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "room")
-public class Room {
+@Table(name = "extra_service")
+public class ExtraService {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "capacity")
-    private int capacity;
+    @Column(name ="service_type")
+    ServiceType type;
 
-    @Column(name= "has_view")
-    private boolean hasView;
-
-    @Column(name = "price")
-    private int price;
+    @Column(name="added_cost")
+    int cost;
 }

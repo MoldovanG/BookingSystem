@@ -10,5 +10,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface PersonRepository extends JpaRepository<Person,String> {
+public interface PersonRepository extends JpaRepository<Person,Long> {
 }

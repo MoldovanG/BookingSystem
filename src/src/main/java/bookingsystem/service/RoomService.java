@@ -3,7 +3,6 @@ package com.moldovan.uni.bookingsystem.service;
 import com.moldovan.uni.bookingsystem.domain.Room;
 import com.moldovan.uni.bookingsystem.dto.RoomDto;
 import com.moldovan.uni.bookingsystem.mapper.RoomMapper;
-import com.moldovan.uni.bookingsystem.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,7 @@ public class RoomService {
     @Autowired
     RoomMapper roomMapper;
 
-    public RoomDto save(RoomDto roomDto){
+    public RoomDto create(RoomDto roomDto){
         Room room = roomMapper.mapToEntity(roomDto);
         roomRepository.save(room);
         return roomMapper.mapToDto(room);

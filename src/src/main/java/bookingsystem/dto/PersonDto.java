@@ -3,6 +3,8 @@ package com.moldovan.uni.bookingsystem.dto;
 
 import lombok.*;
 
+import javax.persistence.Column;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
@@ -19,7 +21,11 @@ public class PersonDto {
     @NotBlank
     private String surname;
     @Pattern(regexp = IdCardSerialNumberMatcher)
-    private String IdentityCardIdentifier;
+    private String identityCardIdentifier;
     @NotBlank
     private String address;
+    @Email
+    private String email;
+
+    private String getUrl;
 }

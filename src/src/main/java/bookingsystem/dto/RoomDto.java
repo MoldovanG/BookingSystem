@@ -12,6 +12,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class RoomDto {
     private Long id;
+    private int price;
     private int capacity;
     private boolean hasView;
 }

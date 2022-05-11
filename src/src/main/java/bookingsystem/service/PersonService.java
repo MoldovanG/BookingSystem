@@ -20,19 +20,21 @@ public class PersonService {
     @Autowired
     private PersonMapper personMapper;
 
-    public PersonDto save(PersonDto personDto) {
+    public PersonDto create(PersonDto personDto) {
         Person person = personMapper.mapToEntity(personDto);
         Person savedPerson = personRepository.save(person);
-        return personMapper.mapToDto(savedPerson);
+        PersonDto created = personMapper.mapToDto(savedPerson);
+        created.setGetUrl("http://localhost:8081/api/person/"+savedPerson.getId());
+        return created;
     }
 
-    public PersonDto update(PersonDto personDto, String personId) {
+    public PersonDto update(PersonDto personDto, Long  personId) {
         Person currentEntity= personRepository.getOne(personId);
         currentEntity.setAddress(personDto.getAddress());
         currentEntity.setName(personDto.getName());
         currentEntity.setSurname(personDto.getSurname());
         currentEntity.setIdentityCardIdentifier(personDto.getIdentityCardIdentifier());
-        Person update = personRepository.save(personMapper.mapToEntity(personDto));
+        Person update = personRepository.save(currentEntity);
         return personMapper.mapToDto(update);
     }
 
@@ -43,7 +45,7 @@ public class PersonService {
                 .collect(Collectors.toList());
     }
 
-    public void delete(String id) {
+    public void delete(Long  id) {
         Person entity = personRepository.getOne(id);
         personRepository.delete(entity);
     }
