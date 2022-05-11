@@ -1,6 +1,7 @@
 package com.moldovan.uni.bookingsystem.dto;
 
 import com.moldovan.uni.bookingsystem.domain.ExtraService;
+import com.moldovan.uni.bookingsystem.domain.Invoice;
 import com.moldovan.uni.bookingsystem.domain.Person;
 import com.moldovan.uni.bookingsystem.domain.Room;
 import lombok.*;
@@ -20,7 +21,7 @@ import java.util.Set;
 public class BookingDto {
 
     @NotNull
-    private Person responsiblePerson;
+    private Invoice invoice;
     @NotNull
     private Set<Room> reservedRooms;
     @NotNull

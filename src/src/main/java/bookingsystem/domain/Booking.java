@@ -1,10 +1,13 @@
-
 package com.moldovan.uni.bookingsystem.domain;
+
+
 import lombok.*;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+
 @Builder
 @Getter
 @Setter
@@ -20,11 +23,12 @@ public class Booking {
     private Long id;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "person_id", referencedColumnName = "id")
-    private Person responsiblePerson;
+    @JoinColumn(name = "invoice_id", referencedColumnName = "id")
+    private Invoice invoice;
 
     @Column(name ="check_in_date")
     private LocalDate checkInDate;
+
     @Column(name ="check_out_date")
     private LocalDate checkOutDate;
 
