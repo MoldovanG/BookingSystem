@@ -1,4 +1,4 @@
-package bookingsystem.controller;
+package com.moldovan.uni.bookingsystem.controller;
 
 import com.moldovan.uni.bookingsystem.dto.PersonDto;
 import com.moldovan.uni.bookingsystem.service.PersonService;
@@ -20,11 +20,15 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("api/person")
+@RequestMapping("/api/person")
 public class PersonController {
 
-    @Autowired
     private PersonService personService;
+
+    @Autowired
+    public PersonController(PersonService personService) {
+        this.personService = personService;
+    }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PersonDto> getAll() {
@@ -38,10 +42,10 @@ public class PersonController {
         return personService.create(personDto);
     }
 
-    @DeleteMapping(value = "/{personId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String remove(@PathVariable("personId") Long personId) {
-        personService.delete(personId);
-        return String.format("Person %s was removed", personId);
+    @DeleteMapping(value = "/{identityCardIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String remove(@PathVariable("identityCardIdentifier") String identityCardIdentifier) {
+        personService.delete(identityCardIdentifier);
+        return String.format("Person %s was removed", identityCardIdentifier);
     }
 
     @PutMapping(value = "/{personId}",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

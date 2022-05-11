@@ -1,4 +1,4 @@
-package bookingsystem.service;
+package com.moldovan.uni.bookingsystem.service;
 
 import com.moldovan.uni.bookingsystem.domain.Person;
 import com.moldovan.uni.bookingsystem.dto.PersonDto;
@@ -9,16 +9,19 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class PersonService {
 
-    @Autowired
     private PersonRepository personRepository;
-    @Autowired
     private PersonMapper personMapper;
+
+    @Autowired
+    public PersonService(PersonRepository personRepository, PersonMapper personMapper) {
+        this.personRepository = personRepository;
+        this.personMapper = personMapper;
+    }
 
     public PersonDto create(PersonDto personDto) {
         Person person = personMapper.mapToEntity(personDto);
@@ -28,7 +31,7 @@ public class PersonService {
         return created;
     }
 
-    public PersonDto update(PersonDto personDto, Long  personId) {
+    public PersonDto update(PersonDto personDto, Long personId) {
         Person currentEntity= personRepository.getOne(personId);
         currentEntity.setAddress(personDto.getAddress());
         currentEntity.setName(personDto.getName());
@@ -45,9 +48,10 @@ public class PersonService {
                 .collect(Collectors.toList());
     }
 
-    public void delete(Long  id) {
-        Person entity = personRepository.getOne(id);
-        personRepository.delete(entity);
+    public void delete(String identityCardIdentifier) {
+        Optional<Person> entity  = personRepository.findAll()
+                .stream().filter(p -> p.getIdentityCardIdentifier().equals(identityCardIdentifier)).findFirst();
+        entity.ifPresent((entityValue) -> personRepository.delete(entityValue));
     }
 
 }
