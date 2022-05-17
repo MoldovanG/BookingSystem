@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,36 +14,39 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.sql.DataSource;
 
-@Configuration
-@EnableWebSecurity
-@Profile("mssql")
-public class MssqlSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private DataSource dataSource;
+    @Configuration
+    @EnableWebSecurity
+    @Profile("mssql")
+    public class MssqlSecurityConfig extends WebSecurityConfigurerAdapter {
+        @Autowired
+        private DataSource dataSource;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+            return new BCryptPasswordEncoder();
+        }
+
+        @Override
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+            auth.jdbcAuthentication()
+                    .dataSource(dataSource)
+                    .usersByUsernameQuery("select username,password,enabled "
+                            + "from users "
+                            + "where username = ?")
+                    .authoritiesByUsernameQuery("select username, authority "
+                            + "from authorities "
+                            + "where username = ?");
+        }
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.authorizeRequests()
+                    .antMatchers(HttpMethod.OPTIONS,"/api/**")
+                    .hasRole("CUSTOMER")
+                    .and()
+                    .httpBasic()
+                    .and()
+                    .csrf().disable();
+
+        }
     }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.jdbcAuthentication()
-                .dataSource(dataSource)
-                .usersByUsernameQuery("select username,password,enabled "
-                        + "from users "
-                        + "where username = ?")
-                .authoritiesByUsernameQuery("select username, authority "
-                        + "from authorities "
-                        + "where username = ?");
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/api/room/**").hasRole("CUSTOMER")
-                .and()
-                .formLogin();
-
-    }
-}
