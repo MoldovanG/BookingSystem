@@ -1,5 +1,6 @@
 package com.moldovan.uni.bookingsystem.domain;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,5 +25,6 @@ public class Room {
     private boolean hasView;
 
     @Column(name = "price")
+    @ApiModelProperty(notes= "must be in RON")
     private int price;
 }

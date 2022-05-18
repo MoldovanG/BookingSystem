@@ -1,85 +1,34 @@
-package com.moldovan.uni.bookingsystem.controller;
+package com.moldovan.uni.bookingsystem.exception.advice;
 
-import com.moldovan.uni.bookingsystem.config.FeatureFlagDefaultConfig;
-import com.moldovan.uni.bookingsystem.dto.RoomDto;
 import com.moldovan.uni.bookingsystem.exceptions.RoomRegistrationUnavailableException;
-import com.moldovan.uni.bookingsystem.service.FeatureFlagServiceProxy;
-import com.moldovan.uni.bookingsystem.service.RoomService;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.moldovan.uni.bookingsystem.service.RoomAllreadyBookedException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import javax.validation.Valid;
-import java.util.List;
+import javax.persistence.EntityNotFoundException;
+import java.time.LocalTime;
+import java.util.NoSuchElementException;
 
-
-@RestController
-@RequestMapping("/api/room")
-public class RoomController {
-
-    @Autowired
-    private RoomService roomService;
-    @Autowired
-    private FeatureFlagDefaultConfig configuration;
-    @Autowired
-    private FeatureFlagServiceProxy featureFlagServiceProxy;
-
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<RoomDto> getAll() {
-        return roomService.getAll();
+@ControllerAdvice
+public class GlobalExceptionHandler {
+    @ExceptionHandler({EntityNotFoundException.class, NoSuchElementException.class})
+    public ResponseEntity<String> handle(EntityNotFoundException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(LocalTime.now() +  "- Entity was not found and failed with message :  " + e.getMessage());
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RoomDto getRoom(@PathVariable ("id") Long id) {
-        return roomService.get(id);
+    @ExceptionHandler(RoomAllreadyBookedException.class)
+    public ResponseEntity<String> handle(RoomAllreadyBookedException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(LocalTime.now() +  "- Booking was not registered. One of the rooms is already booked for the selected period :  " + e.getMessage());
     }
 
-    @GetMapping(value = "/paginated", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Page<RoomDto> getPaginated(@RequestParam(name= "page") int page, @RequestParam(name= "limit") int limitPerPage) {
-        PageRequest pageRequest = PageRequest.of(page,limitPerPage);
-        return roomService.getPaginated(pageRequest);
+    @ExceptionHandler(RoomRegistrationUnavailableException.class)
+    public ResponseEntity<String> handle(RoomRegistrationUnavailableException e){
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(LocalTime.now() +  "- Room registration currently unavailable ");
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @HystrixCommand(ignoreExceptions = { RoomRegistrationUnavailableException.class},fallbackMethod = "fallbackRegisterRoom")
-    public RoomDto create(
-            @Valid
-            @RequestBody RoomDto roomDto) {
-        if(featureFlagServiceProxy.findFeatureFlag("enableRegisterRoom").isValue())
-        {
-            return roomService.create(roomDto);
-        } else{
-           throw new RoomRegistrationUnavailableException();
-        }
-    }
-
-    public RoomDto fallbackRegisterRoom(
-            @Valid
-            @RequestBody RoomDto roomDto) {
-        if (configuration.getEnableRegisterRoom() > 0)
-        {
-            return roomService.create(roomDto);
-        } else{
-            throw new RoomRegistrationUnavailableException();
-        }
-    }
-
-
-    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String remove(@PathVariable("id") Long id) {
-        boolean result = roomService.delete(id);
-        return result ? String.format("Room %s was removed", id)
-                : String.format("Room %s was not removed", id);
-    }
-
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RoomDto> update(@RequestBody RoomDto roomDto, @PathVariable("id") Long id) {
-        RoomDto updatedRoom = roomService.update(roomDto, id);
-        return new ResponseEntity<>(updatedRoom, null == updatedRoom ? HttpStatus.NO_CONTENT : HttpStatus.OK);
-    }
 }
