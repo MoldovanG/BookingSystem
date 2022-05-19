@@ -1,0 +1,86 @@
+
+version: '3.7'
+
+networks:
+  emp-network:
+    driver: bridge
+
+services:
+  booking-ui:
+    container_name: booking-ui
+    image: booking-ui:latest
+    volumes:
+      - H:\\facultate\\SpringBootPlayground\\AWBDreactui:/app
+      - '/app/node_modules'
+    stdin_open: true
+    ports:
+      - 3000:3000
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    networks:
+      - emp-network
+    command: npm start
+
+  configserver:
+    image: configserver:latest
+    container_name: configserver
+    ports:
+      - 8890:8890
+    depends_on:
+      - sql-server-db
+    restart: unless-stopped
+    networks:
+      - emp-network
+
+  bookingsystem:
+    image: bookingsystem:latest
+    container_name: bookingsystem
+    ports:
+      - 8081:8081
+    environment:
+      - Dspring.profiles.active=h2
+    depends_on:
+      - configserver
+      - namingserver
+    restart: unless-stopped
+    networks:
+      - emp-network
+
+  featureflagservice:
+    image: featureflagservice:latest
+    container_name: featureflagservice
+    ports:
+      - 8082:8082
+    depends_on:
+      - configserver
+      - namingserver
+    restart: unless-stopped
+    networks:
+      - emp-network
+
+  namingserver:
+    image: namingserver:latest
+    container_name: namingserver
+    ports:
+      - 8761:8761
+    depends_on:
+      - sql-server-db
+    restart: unless-stopped
+    networks:
+      - emp-network
+
+  sql-server-db:
+    container_name: sql-server-db
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    volumes:
+      - C:\\Users\\georg\\PluralSight\\DockerSqlServer\\Database:/var/opt/mssql/data
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "Croco*742"
+      ACCEPT_EULA: "Y"
+    networks:
+      - emp-network
+
+
+
