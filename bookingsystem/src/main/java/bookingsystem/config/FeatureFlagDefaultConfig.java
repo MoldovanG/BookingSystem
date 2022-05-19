@@ -11,4 +11,5 @@ import org.springframework.stereotype.Component;
 @Setter
 public class FeatureFlagDefaultConfig {
     private int enableRegisterRoom;
+
 }
